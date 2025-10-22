@@ -1,0 +1,7 @@
+function GetExploreSign01_GetWordUis(ui)
+  local uis = {}
+  
+  uis.NameTxt = ui:GetChild("NameTxt")
+  uis.root = ui
+  return uis
+end

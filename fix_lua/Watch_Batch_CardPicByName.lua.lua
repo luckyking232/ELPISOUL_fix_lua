@@ -1,0 +1,7 @@
+function GetWatch_Batch_CardPicUis(ui)
+  local uis = {}
+  
+  uis.PicLoader = ui:GetChild("PicLoader")
+  uis.root = ui
+  return uis
+end

@@ -1,0 +1,9 @@
+function GetActivityDungeon1005_MiniStart_StartingPointUis(ui)
+  local uis = {}
+  
+  uis.BallHolder = ui:GetChild("BallHolder")
+  uis.Effect1Holder = ui:GetChild("Effect1Holder")
+  uis.Effect2Holder = ui:GetChild("Effect2Holder")
+  uis.root = ui
+  return uis
+end

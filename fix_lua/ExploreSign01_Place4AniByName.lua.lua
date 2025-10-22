@@ -1,0 +1,7 @@
+function GetExploreSign01_Place4AniUis(ui)
+  local uis = {}
+  
+  uis.PlaceBtn = ui:GetChild("PlaceBtn")
+  uis.root = ui
+  return uis
+end

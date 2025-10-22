@@ -1,0 +1,8 @@
+function GetActivityDungeon1013_MiniStart2_EndAgainBtnUis(ui)
+  local uis = {}
+  
+  uis.WordTxt = ui:GetChild("WordTxt")
+  uis.buttonCtr = ui:GetController("button")
+  uis.root = ui
+  return uis
+end

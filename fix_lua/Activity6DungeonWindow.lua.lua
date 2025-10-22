@@ -1,0 +1,336 @@
+require("ActivityDungeon1005_ActivityDungeonWindowByName")
+local Activity6DungeonWindow = {}
+local uis, contentPane, jumpTb, configData, activityInfo, effect
+local InitMiniGameInfo = function()
+  local data = ActivityDungeonData.GetActivityData()
+  if data.id == 70440001 then
+    ld("Activity1_MiniGame")
+    Activity1_MiniGameService.MiniGameInfoReq(function()
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity6DungeonWindow.name,
+        com = uis.Main.MiniGameBtn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame1_TaskRewardable() or RedDotActivityDungeon.MiniGame1_DailyTaskRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.UpdateNodeByWindowName(WinResConfig.Activity6DungeonWindow.name)
+    end)
+  elseif data.id == 70440002 then
+    ld("Activity2_MiniGame")
+    Activity2_MiniGameService.MiniGameInfoReq(function()
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity6DungeonWindow.name,
+        com = uis.Main.MiniGameBtn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame2_TaskRewardable() or RedDotActivityDungeon.MiniGame2_DailyTaskRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.UpdateNodeByWindowName(WinResConfig.Activity6DungeonWindow.name)
+    end)
+  elseif data.id == 70440003 then
+    ld("Activity3_MiniGame")
+    Activity3_MiniGameService.MiniGameInfoReq(function()
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity6DungeonWindow.name,
+        com = uis.Main.MiniGameBtn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame3_TaskRewardable() or RedDotActivityDungeon.MiniGame3_DailyTaskRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.UpdateNodeByWindowName(WinResConfig.Activity6DungeonWindow.name)
+    end)
+  elseif data.id == 70440004 then
+    ld("Activity4_MiniGame")
+    Activity4_MiniGameService.MiniGameInfoReq(function()
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity6DungeonWindow.name,
+        com = uis.Main.MiniGameBtn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame4_TaskRewardable() or RedDotActivityDungeon.MiniGame4_DailyTaskRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.UpdateNodeByWindowName(WinResConfig.Activity6DungeonWindow.name)
+    end)
+  elseif data.id == 70440005 then
+    ld("Activity5_MiniGame")
+    Activity5_MiniGameService.MiniGameInfoReq(70441006, function()
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity5DungeonWindow.name,
+        com = uis.Main.MiniGame1Btn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame5_FishTaskRewardable() or RedDotActivityDungeon.MiniGame5_FishDailyTaskRewardable() or RedDotActivityDungeon.MiniGame5_FishBookRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.AddNode({
+        windowName = WinResConfig.Activity5DungeonWindow.name,
+        com = uis.Main.MiniGameBtn,
+        visibleFunc = function()
+          return RedDotActivityDungeon.MiniGame5_TaskRewardable() or RedDotActivityDungeon.MiniGame5_DailyTaskRewardable()
+        end,
+        dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+      })
+      RedDotMgr.UpdateNodeByWindowName(WinResConfig.Activity5DungeonWindow.name)
+    end)
+  elseif data.id == 70440006 then
+  end
+end
+
+function Activity6DungeonWindow.ReInitData()
+end
+
+function Activity6DungeonWindow.OnInit(bridgeObj)
+  bridgeObj:SetViewAsync(WinResConfig.Activity6DungeonWindow.package, WinResConfig.Activity6DungeonWindow.comName, function(com)
+    contentPane = com
+    contentPane:Center()
+    uis = GetActivityDungeon1005_ActivityDungeonWindowUis(contentPane)
+    local trans = uis.Main.root:GetTransition("in")
+    if trans then
+      uis.Main.root.touchable = false
+      trans:SetHook("sign", function()
+        uis.Main.root.touchable = true
+      end)
+    end
+    Activity6DungeonWindow.InitBtn()
+    local plotShowId = bridgeObj.argTable[1]
+    ChangeUIController(uis.Main.root, "review", plotShowId and 1 or 0)
+    if plotShowId then
+      configData = ActivityDungeonMgr.GetConfigDataByShowId(plotShowId)
+      local reviewWord = uis.Main.root:GetChild("ReviewWord")
+      if reviewWord then
+        reviewWord.onClick:Set(function()
+          local id = ActivityDungeonMgr.GetActivityPlotStoryId(plotShowId)
+          if id then
+            OpenWindow(WinResConfig.Activity6PlotWindow.name, nil, id, configData)
+          end
+        end)
+        UIUtil.SetText(reviewWord, T(1801), "WordTxt")
+      end
+      Activity6DungeonWindow.LoadBg()
+    else
+      configData = ActivityDungeonData.GetActivityData()
+      activityInfo = ActivityDungeonData.GetActivityInfo()
+      if configData and activityInfo then
+        Activity6DungeonWindow.InitBtnTxt()
+        Activity6DungeonWindow.UpdateInfo()
+        Activity6DungeonWindow.InitRedDot()
+        Activity6DungeonWindow.LoadBg()
+      end
+    end
+  end)
+end
+
+function Activity6DungeonWindow.LoadBg()
+  UIUtil.SetHolderCenter(uis.Main.BackGround.BackGroundHolder)
+  effect = UIUtil.SetEffectToUI(configData.bg_main, uis.Main.BackGround.BackGroundHolder)
+  if effect then
+    LuaUtil.PlayEffect(effect)
+  end
+  if configData.sound then
+    SoundUtil.PlayMusic(configData.sound)
+  end
+  SoundUtil.PlayUISfx(SOUND_EVENT_ENUM.ACTIVITY_THREE_MAIN_IN)
+end
+
+function Activity6DungeonWindow.InitRedDot()
+  RedDotMgr.AddNode({
+    windowName = WinResConfig.Activity6DungeonWindow.name,
+    com = uis.Main.SignBtn,
+    visibleFunc = function()
+      return RedDotActivityDungeon.CanSgin(ActivityDungeonData.GetShowId())
+    end,
+    dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+  })
+  RedDotMgr.AddNode({
+    windowName = WinResConfig.Activity6DungeonWindow.name,
+    com = uis.Main.PassBtn,
+    visibleFunc = function()
+      return RedDotActivityDungeon.CanHomePass(ActivityDungeonData.GetShowId())
+    end,
+    dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+  })
+  RedDotMgr.AddNode({
+    windowName = WinResConfig.Activity6DungeonWindow.name,
+    com = uis.Main.TaskBtn,
+    visibleFunc = function()
+      return RedDotActivityDungeon.CanTask(ActivityDungeonData.GetShowId())
+    end,
+    dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+  })
+  RedDotMgr.AddNode({
+    windowName = WinResConfig.Activity6DungeonWindow.name,
+    com = uis.Main.MaterialBtn,
+    visibleFunc = function()
+      return RedDotActivityDungeon.CanMaterialRed(ActivityDungeonData.GetShowId())
+    end,
+    dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+  })
+  RedDotMgr.AddNode({
+    windowName = WinResConfig.Activity6DungeonWindow.name,
+    com = uis.Main.MiniGameBtn,
+    visibleFunc = function()
+      return RedDotActivityDungeon.MiniGame6_DailyTaskRewardable() or RedDotActivityDungeon.MiniGame6_TaskRewardable()
+    end,
+    dataType = RED_DOT_DATA_TYPE.ACTIVITY_DUNGENON
+  })
+end
+
+function Activity6DungeonWindow.UpdateInfo()
+  activityInfo = ActivityDungeonData.GetActivityInfo()
+  if nil == activityInfo then
+    return
+  end
+  if activityInfo.baseInfo.startStamp > 0 and activityInfo.baseInfo.endStamp > 0 then
+    local startStamp = TimeUtil.FormatDate("%m/%d", activityInfo.baseInfo.startStamp)
+    local endStamp = TimeUtil.FormatDate("%m/%d", activityInfo.baseInfo.endStamp)
+    uis.Main.MainTitle.Time1Txt.text = T(1520, startStamp, endStamp)
+    uis.Main.MainTitle.Time2Txt.text = T(1521, TimeUtil.FormatEnTime(activityInfo.baseInfo.endStamp - LoginData.GetCurServerTime(), true))
+  end
+  if configData then
+    if configData.shop_id then
+      local shopData = TableData.GetConfig(configData.shop_id, "BaseActivityShop")
+      if shopData then
+        UIUtil.SetIconById(uis.Main.ShopBtn:GetChild("PicLoader"), shopData.token_id)
+        UIUtil.SetText(uis.Main.ShopBtn, ActorData.GetItemCount(shopData.token_id), "NumberTxt")
+      end
+    end
+    if configData.cream_chapter_ids then
+      local arr = Split(configData.cream_chapter_ids, ":")
+      if 3 == #arr then
+        local stageId = tonumber(arr[2])
+        local lock = table.contain(activityInfo.finishStages, stageId)
+        ChangeUIController(uis.Main.MaterialBtn, "lock", lock and 1 or 0)
+        local stageData = TableData.GetConfig(stageId, "BaseStage")
+        local tips = ""
+        if stageData then
+          UIUtil.SetText(uis.Main.MaterialBtn, T(1535, stageData.name()), "LockTxt")
+          tips = T(1542, stageData.name())
+        end
+        uis.Main.MaterialBtn.onClick:Set(function()
+          if lock then
+            OpenWindow(WinResConfig.Activity6MaterialWindow.name)
+          else
+            FloatTipsUtil.ShowWarnTips(tips)
+          end
+        end)
+      end
+    end
+    if configData.boss_chapter_ids then
+      local arr = Split(configData.boss_chapter_ids, ":")
+      if 2 == #arr then
+        local stageId = tonumber(arr[2])
+        local lock = table.contain(activityInfo.finishStages, stageId)
+        ChangeUIController(uis.Main.BossBtn, "lock", lock and 1 or 0)
+        local stageData = TableData.GetConfig(stageId, "BaseStage")
+        local tips = ""
+        if stageData then
+          UIUtil.SetText(uis.Main.BossBtn, T(1535, stageData.name()), "LockTxt")
+          tips = T(1542, stageData.name())
+        end
+        uis.Main.BossBtn.onClick:Set(function()
+          if lock then
+            OpenWindow(WinResConfig.Activity6BossBattleWindow.name)
+          else
+            FloatTipsUtil.ShowWarnTips(tips)
+          end
+        end)
+      end
+    end
+  end
+  ChangeUIController(uis.Main.NormalBtn, "new", RedDotActivityDungeon.CanDailyNew() and 1 or 0)
+  ChangeUIController(uis.Main.BossBtn, "new", RedDotActivityDungeon.CanBossNew() and 1 or 0)
+  if activityInfo and LoginData.GetCurServerTime() < activityInfo.baseInfo.endStamp then
+    ActivityDungeonService.GetActivityAllReq()
+    InitMiniGameInfo()
+  end
+end
+
+function Activity6DungeonWindow.InitBtnTxt()
+  UIUtil.SetText(uis.Main.BossBtn, T(1765))
+  UIUtil.SetText(uis.Main.MaterialBtn, T(1766))
+  uis.Main.NormalBtn.onClick:Set(function()
+    OpenWindow(WinResConfig.Activity6ChallengeWindow.name)
+  end)
+  UIUtil.SetText(uis.Main.NormalBtn, T(1767))
+  if configData and configData.pass_port_id then
+    local passData = TableData.GetConfig(configData.pass_port_id, "BaseBattlePassport")
+    if passData then
+      uis.Main.PassBtn.onClick:Set(function()
+        PassportService.GetBattlePassInfoReq(function()
+          ActivityDungeonMgr.activityIndex = 0
+          OpenWindow(WinResConfig.Activity6PassportWindow.name)
+        end)
+      end)
+      UIUtil.SetText(uis.Main.PassBtn, passData.name())
+    end
+  end
+  local conf = TableData.GetConfig(70441007, "BaseActivityStageGame")
+  if conf then
+    UIUtil.SetText(uis.Main.MiniGameBtn, conf.game_name and conf.game_name() or "", "NameTxt")
+  end
+  uis.Main.PlotBtn.onClick:Set(function()
+    local id = ActivityDungeonMgr.GetUnlockPlotId()
+    configData = ActivityDungeonData.GetActivityData()
+    if table.getLen(id) > 0 then
+      OpenWindow(WinResConfig.Activity6PlotWindow.name, nil, id, configData)
+    else
+      FloatTipsUtil.ShowWarnTips(T(1607))
+    end
+  end)
+  UIUtil.SetText(uis.Main.PlotBtn, T(1762))
+  uis.Main.ShopBtn.onClick:Set(function()
+    OpenWindow(WinResConfig.Activity6ShopWindow.name)
+  end)
+  UIUtil.SetText(uis.Main.ShopBtn, T(1764))
+  uis.Main.SignBtn.onClick:Set(function()
+    OpenWindow(WinResConfig.Activity6SignWindow.name)
+  end)
+  UIUtil.SetText(uis.Main.SignBtn, T(1768))
+  uis.Main.TaskBtn.onClick:Set(function()
+    ActivityDungeonService.GetActivityAllReq(function()
+      OpenWindow(WinResConfig.Activity6TaskWindow.name)
+    end)
+  end)
+  UIUtil.SetText(uis.Main.TaskBtn, T(1763))
+  uis.Main.MiniGameBtn.onClick:Set(function()
+    OpenWindow(WinResConfig.Activity6MiniGameMainWindow.name)
+  end)
+end
+
+function Activity6DungeonWindow.InitBtn()
+  jumpTb = CurrencyReturnWindow.SetCurrencyReturn(WinResConfig.Activity6DungeonWindow.name, uis.Main.CurrencyReturn, FEATURE_ENUM.HOME_ADVENTURE)
+end
+
+function Activity6DungeonWindow.OnShown()
+  if uis then
+    Activity6DungeonWindow.UpdateInfo()
+  end
+end
+
+function Activity6DungeonWindow.OnClose()
+  RedDotMgr.RemoveNode(WinResConfig.Activity6DungeonWindow.name)
+  uis = nil
+  if effect then
+    ResourceManager.DestroyGameObject(effect, false)
+    effect = nil
+  end
+  contentPane = nil
+  if jumpTb then
+    jumpTb.Close()
+    jumpTb = nil
+  end
+  configData = nil
+  activityInfo = nil
+end
+
+function Activity6DungeonWindow.HandleMessage(msgId, para)
+  if msgId == WindowMsgEnum.Common.E_MSG_CROSS_DAY then
+    ActivityDungeonMgr.CheckActivityEnd()
+  end
+end
+
+return Activity6DungeonWindow
